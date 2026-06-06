@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  phone        String        @unique
+  email        String        @unique
+  password     String
+  currentLimit Int           @default(0)
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Transaction {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  limitAmount       Int
+  fee               Int
+  status            String   @default("PENDING")
+  checkoutRequestId String?  @unique
+  mpesaReceiptNumber String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
